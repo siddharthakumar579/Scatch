@@ -84,7 +84,7 @@ npm run dev
 ## 🌍 Deployment
 This project is configured for cloud deployment.
 - **Frontend:** Deploy the `FrontEnd` folder to **Vercel** or **Netlify**. Make sure to set the `VITE_API_URL` environment variable to your live backend URL.
-- **Backend:** Deploy the `Backend` folder to **Render** or **Railway**. Make sure to set the `FRONTEND_URL` environment variable to your live frontend URL to allow CORS.
+- **Backend:** Deploy the `Backend` folder to **Railway**. (Railway is highly recommended because it automatically configures the OS environment required for `puppeteer`). Make sure to set the `FRONTEND_URL` environment variable to your live frontend URL to allow CORS.
 
 ---
 
