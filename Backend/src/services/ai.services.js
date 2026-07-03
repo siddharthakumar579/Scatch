@@ -3,6 +3,8 @@ const { z } = require('zod');
 const { zodToJsonSchema } = require('zod-to-json-schema');
 const chromium = require('@sparticuz/chromium');
 const puppeteer = require('puppeteer-core');
+const fs = require('fs');
+const os = require('os');
 
 const ai = new GoogleGenAI({apiKey: process.env.GEMINI_API_KEY});
 
@@ -77,13 +79,33 @@ async function generateInterviewReport({resume, selfDescription, jobDescription}
 }
 
 const generatePdfFromHtml = async (htmlContent) => {
+    // 1. Detect if we are running locally on Windows/Mac
+    const isLocal = os.platform() === 'win32' || os.platform() === 'darwin';
+    
+    let executablePath = null;
+    if (isLocal) {
+        const paths = [
+            'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+            'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+            '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+        ];
+        for (const p of paths) {
+            if (fs.existsSync(p)) {
+                executablePath = p;
+                break;
+            }
+        }
+    } else {
+        // We are on Render/Cloud (Linux)
+        executablePath = await chromium.executablePath();
+    }
 
-    // Sparticuz Chromium is optimized for cloud/serverless environments
+    // 2. Launch browser using local Chrome OR Cloud Sparticuz Chromium
     const browser = await puppeteer.launch({ 
-        args: chromium.args,
+        args: isLocal ? ['--no-sandbox', '--disable-setuid-sandbox'] : chromium.args,
         defaultViewport: chromium.defaultViewport,
-        executablePath: await chromium.executablePath(),
-        headless: chromium.headless,
+        executablePath: executablePath,
+        headless: isLocal ? true : chromium.headless,
         ignoreHTTPSErrors: true,
     });
     
