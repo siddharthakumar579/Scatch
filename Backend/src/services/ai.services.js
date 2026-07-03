@@ -1,7 +1,8 @@
 const { GoogleGenAI } = require("@google/genai") ;
 const { z } = require('zod');
 const { zodToJsonSchema } = require('zod-to-json-schema');
-const puppeteer = require('puppeteer');
+const chromium = require('@sparticuz/chromium');
+const puppeteer = require('puppeteer-core');
 
 const ai = new GoogleGenAI({apiKey: process.env.GEMINI_API_KEY});
 
@@ -77,8 +78,13 @@ async function generateInterviewReport({resume, selfDescription, jobDescription}
 
 const generatePdfFromHtml = async (htmlContent) => {
 
+    // Sparticuz Chromium is optimized for cloud/serverless environments
     const browser = await puppeteer.launch({ 
-        args: ['--no-sandbox', '--disable-setuid-sandbox'] 
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath: await chromium.executablePath(),
+        headless: chromium.headless,
+        ignoreHTTPSErrors: true,
     });
     
     try {
