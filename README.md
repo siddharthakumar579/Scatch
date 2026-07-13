@@ -45,7 +45,7 @@ git clone https://github.com/yourusername/Scatch.git
 cd Scatch
 ```
 
-### 3. Backend Setup
+### 3. Backend Setup 
 ```bash
 cd Backend
 npm install
